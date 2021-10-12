@@ -15,15 +15,15 @@ git clone --depth=1 https://github.com/to-bar/vagrant-hyperv-multi-vm-env.git
 
 ## Usage
 
-1. Go to project's directory
+1. Open command prompt as administrator
+2. Go to project's directory
 
     ```shell
     cd vagrant-hyperv-multi-vm-env
     ```
 
-2. Edit `config.yml` file
-
-3. Run Vagrant
+3. Edit `config.yml` file
+4. Run Vagrant
 
     - Create environment
 
@@ -73,7 +73,7 @@ git clone --depth=1 https://github.com/to-bar/vagrant-hyperv-multi-vm-env.git
         vagrant snapshot delete <snapshot-name>
         ```
 
-4. Connect to VM
+5. Connect to VM
 
     - Using SSH client
 
