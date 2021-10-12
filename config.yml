@@ -1,0 +1,39 @@
+---
+vm_group: ubuntu-test
+box: generic/ubuntu1804 # centos/7, generic/rhel7
+vms:
+  - name: all-settings-example
+    enabled: false
+    ip: 192.168.20.2
+    # optional
+    hostname: demo-01
+    cpus: 2
+    memory: 2080
+  - name: repo
+    enabled: true
+    ip: 192.168.20.60
+  - name: pg-01
+    enabled: true
+    ip: 192.168.20.61
+  - name: pg-02
+    enabled: false
+    ip: 192.168.20.62
+ssh:
+  public_key_path: ~/.ssh/id_rsa.pub
+network:
+  vswitch: NAT Switch
+  gateway:
+    ip: 192.168.20.1
+    prefix_length: 24
+  nat:
+    address_prefix: 192.168.20.0/24
+    name: Vagrant on Hyper-V
+  dns:
+    dns1: 8.8.8.8
+    dns2: 8.8.4.4
+defaults:
+  vm:
+    cpus: 4
+    memory: 2048
+settings:
+  verbosity: 0
