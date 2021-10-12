@@ -36,18 +36,24 @@ def machine_trigger_after_up!(trigger, target_ip, network_spec, box, verbosity)
   end
 end
 
+def print_info?(argv)
+  argv.any? { |arg| %w[up halt destroy].include?(arg) } && argv.all? { |arg| !['-h', '--help'].include?(arg) }
+end
+
 # --- Run ---
 
 # Print info
-puts "Group: #{CONFIG[:vm_group]}"
-puts 'Target VMs:'
-name_max_length = TARGET_VMS.map { |vm| vm[:name] }.map(&:length).max
-TARGET_VMS.each_with_index do |vm, index|
-  printf "%<index>2d) %<name>-#{name_max_length}s | %<ip>s\n", index: index + 1, name: vm[:name], ip: vm[:ip]
+if print_info?(ARGV)
+  puts "Group: #{CONFIG[:vm_group]}"
+  puts 'Target VMs:'
+  name_max_length = TARGET_VMS.map { |vm| vm[:name] }.map(&:length).max
+  TARGET_VMS.each_with_index do |vm, index|
+    printf "%<index>2d) %<name>-#{name_max_length}s | %<ip>s\n", index: index + 1, name: vm[:name], ip: vm[:ip]
+  end
 end
 
 # Create NAT vSwitch (no 'trigger.before [:up]' in order to run once)
-if ARGV.include?('up')
+if ARGV.include?('up') && ARGV.all? { |arg| !['-h', '--help'].include?(arg) }
   puts '---'
   puts "Ensure vSwitch \"#{CONFIG[:network][:vswitch]}\" exists..."
   cmd = [
@@ -103,13 +109,15 @@ Vagrant.configure(2) do |config|
 end
 
 at_exit do
-  # Run time info
-  end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-  elapsed_time = end_time - START_TIME
-  puts '---'
-  puts "Ended at: #{Time.now.strftime('%H:%M')}"
-  format = '%Ss'
-  format.prepend('%Mm ') if elapsed_time >= 60
-  format.prepend('%Hm ') if elapsed_time >= 3600
-  puts "Elapsed time: #{Time.at(elapsed_time).utc.strftime(format)}"
+  if print_info?(ARGV)
+    # Run time info
+    end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    elapsed_time = end_time - START_TIME
+    puts '---'
+    puts "Ended at: #{Time.now.strftime('%H:%M')}"
+    format = '%Ss'
+    format.prepend('%Mm ') if elapsed_time >= 60
+    format.prepend('%Hm ') if elapsed_time >= 3600
+    puts "Elapsed time: #{Time.at(elapsed_time).utc.strftime(format)}"
+  end
 end
